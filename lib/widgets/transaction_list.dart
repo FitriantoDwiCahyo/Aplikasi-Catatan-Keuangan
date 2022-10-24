@@ -4,58 +4,57 @@ import 'package:intl/intl.dart';
 import '../models/transaction.dart';
 
 class TransactionList extends StatelessWidget {
-  TransactionList({Key? key}) : super(key: key);
+  final List<Transaction> transactions;
+
+  TransactionList({Key? key, required this.transactions}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: _userTransaction.map((tx) {
-        return Card(
-          child: Row(
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.symmetric(
-                  vertical: 10,
-                  horizontal: 15,
+    return Container(
+      height: 300,
+      child: transactions.isEmpty
+          ? Column(
+              children: [
+                Text(
+                  'No transactions added yet!',
+                  style: Theme.of(context).textTheme.headline6,
                 ),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.orange,
-                    width: 2,
-                  ),
+                SizedBox(
+                  height: 20,
                 ),
-                child: Text(
-                  'Rp.${tx.amount}',
-                  style: TextStyle(
-                      color: Colors.orange,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16),
+                Container(
+                  height: 200,
+                  child: Image.asset('assets/images/waiting.png',
+                      fit: BoxFit.cover),
                 ),
-                padding: EdgeInsets.all(10),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    tx.title,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+              ],
+            )
+          : ListView.builder(
+              itemBuilder: (context, index) {
+                return Card(
+                  elevation: 5,
+                  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      radius: 30,
+                      child: FittedBox(
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          child: Text('Rp. ${transactions[index].amount}'),
+                        ),
+                      ),
                     ),
-                  ),
-                  Text(
-                    DateFormat.yMEd().format(tx.date),
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 12,
+                    title: Text(transactions[index].title,
+                        style: Theme.of(context).textTheme.headline6),
+                    subtitle: Text(
+                      DateFormat.yMEd().format(transactions[index].date),
                     ),
+                    
                   ),
-                ],
-              ),
-            ],
-          ),
-        );
-      }).toList(),
+                );
+              },
+              itemCount: transactions.length,
+            ),
     );
   }
 }
