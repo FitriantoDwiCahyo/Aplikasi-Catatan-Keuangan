@@ -34,6 +34,7 @@ class _NewTransactionState extends State<NewTransaction> {
     Navigator.of(context).pop();
   }
 
+  //METHOD UNTUK MENAMPILKAN KALENDER ATAU DATE PICKER
   void _presentDatePicker() {
     showDatePicker(
       context: context,
