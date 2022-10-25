@@ -57,6 +57,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+
   final List<Transaction> _userTransactions = [
     // Transaction(
     //   id: 't1',
@@ -78,6 +79,7 @@ class _MyAppState extends State<MyApp> {
     // ),
   ];
 
+  bool _showChart = false;
   //getter
   List<Transaction> get _recentTransactions {
     return _userTransactions.where((tx) {
@@ -124,6 +126,9 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    //variable untuk cek konten landscape or not
+    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+
     //Appbar di pindakan ke variable untuk perhitungan media query
     final appBar = AppBar(
       title: Text(
@@ -137,6 +142,15 @@ class _MyAppState extends State<MyApp> {
       ],
     );
 
+    final txListWidget = Container(
+      height: (MediaQuery.of(context).size.height -
+              appBar.preferredSize.height -
+              MediaQuery.of(context).padding.top) *
+          0.7,
+      child: TransactionList(
+          transactions: _userTransactions, delTransaction: _deleteTransaction),
+    );
+
     return Scaffold(
       appBar: appBar,
       body: SingleChildScrollView(
@@ -144,24 +158,44 @@ class _MyAppState extends State<MyApp> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Container(
-              height: (MediaQuery.of(context).size.height -
-                      appBar.preferredSize.height -
-                      MediaQuery.of(context).padding.top) *
-                  0.3,
-              child: Chart(
-                recentTransactions: _recentTransactions,
+            if (isLandscape) //if fitur baru untuk pengecekan kondisi dan tanpa mengunakan {}
+                Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text('Show Chart'),
+                  Switch(
+                    value: _showChart,
+                    onChanged: (val) {
+                      setState(() {
+                        _showChart = val;
+                      });
+                    },
+                  ),
+                ],
               ),
-            ),
-            Container(
-              height: (MediaQuery.of(context).size.height -
-                      appBar.preferredSize.height -
-                      MediaQuery.of(context).padding.top) *
-                  0.7,
-              child: TransactionList(
-                  transactions: _userTransactions,
-                  delTransaction: _deleteTransaction),
-            )
+            if (!isLandscape)
+              Container(
+                height: (MediaQuery.of(context).size.height -
+                        appBar.preferredSize.height -
+                        MediaQuery.of(context).padding.top) *
+                    0.3,
+                child: Chart(
+                  recentTransactions: _recentTransactions,
+                ),
+              ),
+            if (!isLandscape) txListWidget,
+            if (isLandscape)
+              _showChart
+                  ? Container(
+                      height: (MediaQuery.of(context).size.height -
+                              appBar.preferredSize.height -
+                              MediaQuery.of(context).padding.top) *
+                          0.7,
+                      child: Chart(
+                        recentTransactions: _recentTransactions,
+                      ),
+                    )
+                  : txListWidget
           ],
         ),
       ),
